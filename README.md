@@ -12,7 +12,7 @@ This code scrapes data from the I-140 approvals section of the [Chen Immigration
 6. Send plot as attachment to desired recipients via [SendGridAPI](https://sendgrid.com/)
 
 ### Installation and Running Instructions:
-Navigate to the location of your codebase in your terminal and run the following commands:
+After cloning this repo, navigate to the location of your local copy in your terminal and run the following commands:
 1. `python setup.py install`
 2. `export SENDGRID_API_KEY=<YOUR_API_KEY>` to run the email client _[Optional]_
 
