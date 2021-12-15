@@ -26,7 +26,9 @@ def main():
     percentile_of_days_elapsed = service_center.get_percentile_of_days_elapsed()
     # Prepare email content
     html_content = f"""<strong>Percentile of Days Elapsed Based on Last 6 Months of Chen Immigration I-140 NIW Data for {service_center.name}: {percentile_of_days_elapsed}%</strong> """
-    send_email(html_content, service_center)
+
+    if args["send_email"]:
+        send_email(html_content, service_center)
 
 
 def _parse_cli():
