@@ -9,7 +9,7 @@ This code scrapes data from the I-140 approvals section of the [Chen Immigration
 3. Parse images using `pytesseract` and generate `I140Form` objects
 4. Generate dataset based on `I140Form` features such as `notice date`, `receipt date`, `priority date`, and `NIW flag` indicating whether a form is for an NIW application
 5. Generate yearly wait time distribution and plot for 2017+
-6. Send plot as attachment to desired recipients via `SendGrid`
+6. Send plot as attachment to desired recipients via [SendGridAPI](https://sendgrid.com/)
 
 ### Installation and Running Instructions:
 Navigate to the location of your codebase in your terminal and run the following commands:
