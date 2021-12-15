@@ -7,7 +7,7 @@ import plotly.express as px
 from scipy.stats import stats
 
 from src.config.directories import directories
-from src.constants import DATASET, HTML_FILENAME, PNG_FILENAME
+from src.constants import DATASET, HTML_FILENAME, PNG_FILENAME, APPLICATION_DATE
 
 logger = logging.getLogger(__name__)
 
@@ -84,11 +84,10 @@ class ServiceCenter:
         self._df_processing_times_distribution = df_processing_times_distribution
 
     @staticmethod
-    def _get_days_since_application(
-        application_date: datetime = datetime(2020, 12, 15)
-    ) -> int:
-        today = datetime.today()
-        days_since_application = today - application_date
+    def _get_days_since_application(application_date: str) -> int:
+        days_since_application = datetime.today() - datetime.strptime(
+            application_date, "%Y-%m-%d"
+        )
         return days_since_application.days
 
     def plot_processing_times_distribution(self) -> None:
@@ -130,7 +129,8 @@ class ServiceCenter:
         processing_time_series = df_6M["processing_time"]
         percentile = round(
             stats.percentileofscore(
-                processing_time_series, self._get_days_since_application()
+                processing_time_series,
+                self._get_days_since_application(APPLICATION_DATE),
             ),
             2,
         )

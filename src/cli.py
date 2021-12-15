@@ -1,20 +1,17 @@
 import argparse
 import logging
 
-from src.constants import SERVICE_CENTER_REGISTRY
+from src.constants.service_center_registry import SERVICE_CENTER_REGISTRY
 from src.context import context
 from src.distribution import process_distribution
 from src.scraper import Scraper
 
 logger = logging.getLogger(__name__)
 
-_PIPELINES_REGISTRY = {
-    "scrape": Scraper().run,
-    "distribution": process_distribution,
-}
+_PIPELINES_REGISTRY = {"scrape": Scraper().run, "distribution": process_distribution}
 
 
-def main():
+def main() -> None:
     """ CLI entrypoint. """
     args = _parse_cli()
 
@@ -25,7 +22,7 @@ def main():
     pipeline()
 
 
-def _parse_cli():
+def _parse_cli() -> argparse.Namespace:
     """ Parse the CLI argument, and return the args object. """
     parser = argparse.ArgumentParser(description="Chen Immigration EB2 NIW Processing")
     parser.add_argument("pipeline", choices=_PIPELINES_REGISTRY.keys())
@@ -37,7 +34,7 @@ def _parse_cli():
     return args
 
 
-def _check_args(args, parser):
+def _check_args(args, parser) -> None:
     """ Raise error if CLI args are not valid. """
-    if args.pipeline == 'distribution' and args.service_center is None:
+    if args.pipeline == "distribution" and args.service_center is None:
         parser.error("pipeline 'distribution' requires --service-center.")

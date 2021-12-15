@@ -1,5 +1,6 @@
 import logging
 import sys
+
 from src.cli import main as run_cli
 
 root = logging.getLogger()

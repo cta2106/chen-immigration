@@ -1,5 +1,4 @@
 import logging
-import os
 from os import listdir
 from os.path import isfile
 from pathlib import Path

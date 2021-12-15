@@ -36,7 +36,7 @@ def read_i140_forms_from_csv() -> List[Optional[I140Form]]:
         return i140_data
     except FileNotFoundError:
         logger.info(f"CSV file not found... creating empty file")
-        with open(directories.data / DATASET, mode='a'):
+        with open(directories.data / DATASET, mode="a"):
             pass
         return list()
     except pd.errors.EmptyDataError:

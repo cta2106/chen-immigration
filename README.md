@@ -1,6 +1,6 @@
 # EB2-NIW Wait Time Analysis Based on We Greened Data
 
-This code scrapes data from the I-140 approvals section of the [Chen Immigration website](https://www.wegreened.com/eb1_niw_approvals) and processes it to determine current wait times by service center. 
+This code scrapes data from the I-140 approvals section of the [Chen Immigration website](https://www.wegreened.com/eb1_niw_approvals) and processes it to determine current wait times by service center.
 
 ### Steps:
 
@@ -14,8 +14,14 @@ This code scrapes data from the I-140 approvals section of the [Chen Immigration
 ### Installation and Running Instructions:
 Navigate to the location of your codebase in your terminal and run the following commands:
 1. `python setup.py install`
-2. `export SENDGRID_API_KEY=<YOUR_API>` to run the email client _[Optional]_ 
-3. `python -m src <SERVICE_CENTER>` where `<SERVICE_CENTER>` is either `SRC` for the Texas Service Center or `LIN` for the Nebraska Service Center
+2. `export SENDGRID_API_KEY=<YOUR_API_KEY>` to run the email client _[Optional]_
+
+#### To scrape the data run:
+3. `python -m src scrape`
+#### To generate the wait time distribution run:
+4. `python -m src distribution --service-center <SERVICE_CENTER>` where `<SERVICE_CENTER>` is either `SRC` for the Texas Service Center or `LIN` for the Nebraska Service Center
+#### Add the `-e` flag to send an email with the distribution plot as an attachment
+5. `python -m src distribution --service-center <SERVICE_CENTER> -e`
 
 ### Example Distribution Plot
 <img src="./src/images/LIN_processing_time.png"/>
