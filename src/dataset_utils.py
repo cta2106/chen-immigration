@@ -1,5 +1,5 @@
 import logging
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
 
@@ -29,11 +29,16 @@ def process_service_center(row: pd.Series) -> pd.Series:
     return row
 
 
-def read_i140_forms_from_csv() -> List[I140Form]:
+def read_i140_forms_from_csv() -> List[Optional[I140Form]]:
     try:
         df = pd.read_csv(directories.data / DATASET)
         i140_data = process_forms_dataframe(df)
         return i140_data
+    except FileNotFoundError:
+        logger.info(f"CSV file not found... creating empty file")
+        with open(directories.data / DATASET, mode='a'):
+            pass
+        return list()
     except pd.errors.EmptyDataError:
         logger.info(f"CSV file is empty.")
         return list()
