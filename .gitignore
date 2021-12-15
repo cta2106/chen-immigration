@@ -1,7 +1,10 @@
+# Pre-commit configuration
+.pre-commit-config.yaml
+
 # DS_Store
 *.DS_Store*
 
-#idea
+# idea
 *.idea*
 
 # Data

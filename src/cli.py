@@ -1,41 +1,43 @@
 import argparse
 import logging
 
-from src.emailing.emailing import send_email
+from src.constants import SERVICE_CENTER_REGISTRY
+from src.context import context
+from src.distribution import process_distribution
 from src.scraper import Scraper
-from src.service_center import ServiceCenter, ServiceCenterEnum
 
 logger = logging.getLogger(__name__)
 
-_SERVICE_CENTER_REGISTRY = {
-    "SRC": ServiceCenter(ServiceCenterEnum.SRC),
-    "LIN": ServiceCenter(ServiceCenterEnum.LIN),
+_PIPELINES_REGISTRY = {
+    "scrape": Scraper().run,
+    "distribution": process_distribution,
 }
 
 
 def main():
     """ CLI entrypoint. """
-    scraper = Scraper()
-    scraper.run()
-
     args = _parse_cli()
 
-    service_center = _SERVICE_CENTER_REGISTRY[args["service_center"]]
-    service_center.plot_processing_times_distribution()
-    # Determine percentile of days elapsed
-    percentile_of_days_elapsed = service_center.get_percentile_of_days_elapsed()
-    # Prepare email content
-    html_content = f"""<strong>Percentile of Days Elapsed Based on Last 6 Months of Chen Immigration I-140 NIW Data for {service_center.name}: {percentile_of_days_elapsed}%</strong> """
+    for k, v in vars(args).items():
+        setattr(context, k, v)
 
-    if args["send_email"]:
-        send_email(html_content, service_center)
+    pipeline = _PIPELINES_REGISTRY[context.pipeline]
+    pipeline()
 
 
 def _parse_cli():
     """ Parse the CLI argument, and return the args object. """
     parser = argparse.ArgumentParser(description="Chen Immigration EB2 NIW Processing")
-    parser.add_argument("service_center", choices=_SERVICE_CENTER_REGISTRY.keys())
+    parser.add_argument("pipeline", choices=_PIPELINES_REGISTRY.keys())
+    parser.add_argument("--service-center", choices=SERVICE_CENTER_REGISTRY.keys())
     parser.add_argument("-e", "--send_email", action="store_true", default=False)
 
     args = parser.parse_args()
+    _check_args(args, parser)
     return args
+
+
+def _check_args(args, parser):
+    """ Raise error if CLI args are not valid. """
+    if args.pipeline == 'distribution' and args.service_center is None:
+        parser.error("pipeline 'distribution' requires --service-center.")
