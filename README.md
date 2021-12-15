@@ -1,4 +1,4 @@
-# EB2-NIW Wait Time Analysis Based on We Greened Data
+# EB2-NIW Wait Time Analysis Based on **We Greened** Data
 
 This code scrapes data from the I-140 approvals section of the [Chen Immigration website](https://www.wegreened.com/eb1_niw_approvals) and processes it to determine current wait times by service center.
 
