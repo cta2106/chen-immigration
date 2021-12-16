@@ -42,11 +42,3 @@ def read_i140_forms_from_csv() -> List[Optional[I140Form]]:
     except pd.errors.EmptyDataError:
         logger.info(f"CSV file is empty.")
         return list()
-
-
-def get_number_of_rows_from_csv() -> int:
-    try:
-        df = pd.read_csv(directories.data / DATASET)
-        return len(df)
-    except pd.errors.EmptyDataError:
-        return 0

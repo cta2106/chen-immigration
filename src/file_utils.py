@@ -29,8 +29,8 @@ def get_files_in_dir(directory: Path, *, filetype: str) -> Set[str]:
 
 def filter_urls_based_on_filenames(
     url_set: Set[str], filename_set: Set[str]
-) -> List[str]:
-    return [s for s in url_set if any(sub in s for sub in filename_set)]
+) -> Set[str]:
+    return {s for s in url_set if any(sub == s.split("/")[-1] for sub in filename_set)}
 
 
 def get_chunked_form(form_url: str, local_filename: str) -> None:
