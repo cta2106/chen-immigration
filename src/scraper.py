@@ -113,7 +113,7 @@ class Scraper:
                 end = time.time()
                 form_dict = form.as_dict() if form else None
                 yield form_dict, end - start
-                logger.info(f"Added form {form_dict.filename} to forms.")
+                logger.info(f"Added form {form.filename} to forms.")
 
     def _write_forms_to_csv(self, *, chunk_size: int) -> None:
         chunk = list()
