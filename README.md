@@ -17,7 +17,7 @@ After cloning this repo, navigate to the location of your local copy in your ter
 2. `export SENDGRID_API_KEY=<YOUR_API_KEY>` to run the email client _[Optional]_
 
 #### To scrape the data run:
-3. `python -m src scrape`
+3. `python -m src scrape --chunk-size=<CHUNK_SIZE>` where `<CHUNK_SIZE>` determines the number of forms to save to disk at a time.
 #### To generate the wait time distribution run:
 4. `python -m src distribution --service-center <SERVICE_CENTER>` where `<SERVICE_CENTER>` is either `SRC` for the Texas Service Center or `LIN` for the Nebraska Service Center
 #### Add the `-e` flag to send an email with the distribution plot as an attachment

@@ -12,6 +12,7 @@ from requests.exceptions import ReadTimeout, ConnectionError, ChunkedEncodingErr
 
 from src.config.directories import directories
 from src.constants import DATASET, URL_2019, URL_2020, URL_2021, URL_PRE_2019
+from src.context import context
 from src.dataset_utils import read_i140_forms_from_csv
 from src.file_utils import (
     get_files_in_dir,
@@ -156,4 +157,4 @@ class Scraper:
         self._populate_form_urls_to_scrape()
         self._download_new_pdf_forms()
         self._convert_new_pdf_forms_to_png()
-        self._write_forms_to_csv(chunk_size=5)
+        self._write_forms_to_csv(chunk_size=context.chunk_size)

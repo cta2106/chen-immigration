@@ -25,9 +25,29 @@ def main() -> None:
 def _parse_cli() -> argparse.Namespace:
     """ Parse the CLI argument, and return the args object. """
     parser = argparse.ArgumentParser(description="Chen Immigration EB2 NIW Processing")
-    parser.add_argument("pipeline", choices=_PIPELINES_REGISTRY.keys())
-    parser.add_argument("--service-center", choices=SERVICE_CENTER_REGISTRY.keys())
-    parser.add_argument("-e", "--send_email", action="store_true", default=False)
+    parser.add_argument(
+        "pipeline",
+        choices=_PIPELINES_REGISTRY.keys(),
+        help="Choose between scrape or distribution.",
+    )
+    parser.add_argument(
+        "--service-center",
+        choices=SERVICE_CENTER_REGISTRY.keys(),
+        help="USCIS service center. Choose between SRC or LIN.",
+    )
+    parser.add_argument(
+        "--chunk-size",
+        type=int,
+        default=25,
+        help="Number of forms to save to disk at a time.",
+    )
+    parser.add_argument(
+        "-e",
+        "--send_email",
+        action="store_true",
+        default=False,
+        help="Decide whether to send email with your distribution plot.",
+    )
 
     args = parser.parse_args()
     _check_args(args, parser)
