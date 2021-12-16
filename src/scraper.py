@@ -59,19 +59,13 @@ class Scraper:
         }
         filenames_from_website = {filename_from_url(url) for url in self.form_urls}
 
-        filenames_to_scrape = filenames_from_website.difference(
-            set(filenames_from_csv)
-        )
-        logger.info(
-            f"Filtering out urls already present in CSV..."
-        )
+        filenames_to_scrape = filenames_from_website.difference(set(filenames_from_csv))
+        logger.info(f"Filtering out urls already present in CSV...")
 
         form_urls_to_scrape = filter_urls_based_on_filenames(
             self.form_urls, filenames_to_scrape
         )
-        logger.info(
-            f"Found {len(form_urls_to_scrape)} new file(s) to scrape."
-        )
+        logger.info(f"Found {len(form_urls_to_scrape)} new file(s) to scrape.")
         self.form_urls_to_scrape = form_urls_to_scrape
 
     def _get_pdfs_to_download(self) -> Set[str]:
@@ -114,24 +108,24 @@ class Scraper:
                 self.i140_forms.append(form)
                 yield form.as_dict()
                 logger.info(f"Added form {form.as_dict()} to forms.")
-    
+
     def _write_forms_to_csv(self, *, chunk_size: int) -> None:
         chunk = list()
         existing_rows = len(self.form_urls) - len(self.form_urls_to_scrape)
         new_rows = 0
-        
+
         for idx, form in enumerate(self._generate_forms_to_scrape()):
             chunk.append(form)
             if len(chunk) % chunk_size == 0 or idx == len(self.form_urls_to_scrape) - 1:
                 existing_rows += chunk_size
                 new_rows += chunk_size
-                
+
                 self._write_chunk(chunk, existing_rows)
                 chunk = list()
 
     def _is_empty_csv(self):
         return len(self.form_urls) == len(self.form_urls_to_scrape)
-    
+
     def _write_chunk(self, chunk: List[Optional[I140Form]], existing_rows: int) -> None:
         header = True if existing_rows == len(chunk) else False
         pd.DataFrame(chunk).to_csv(
