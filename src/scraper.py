@@ -16,16 +16,16 @@ from src.context import context
 from src.dataset_utils import read_i140_forms_from_csv
 from src.file_utils import (
     get_files_in_dir,
-    filename_from_url,
+    pdf_filename_from_url,
     filter_urls_based_on_filenames,
-    get_chunked_form,
-    find_pdfs_to_convert,
     png_to_pdf_filename,
     pdf_to_png_filename,
+    get_chunked_form_content,
+    filename_from_url,
 )
 from src.form import I140Form
 from src.image_to_form import image_to_form
-from src.pdf_to_png import pdf_to_png
+from src.pdf_to_png import download_pdf_content_as_png
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ class Scraper:
         filenames_from_csv = {
             png_to_pdf_filename(form.filename) for form in self.i140_forms
         }
-        filenames_from_website = {filename_from_url(url) for url in self.form_urls}
+        filenames_from_website = {pdf_filename_from_url(url) for url in self.form_urls}
 
         filenames_to_scrape = filenames_from_website.difference(set(filenames_from_csv))
         logger.info(f"Filtering out urls already present in CSV...")
@@ -71,41 +71,42 @@ class Scraper:
         logger.info(f"Found {len(form_urls_to_scrape)} new file(s) to scrape.")
         self.form_urls_to_scrape = form_urls_to_scrape
 
-    def _get_pdfs_to_download(self) -> Set[str]:
-        existing_pdfs = get_files_in_dir(directories.output, filetype=".pdf")
+    def _get_forms_to_download(self) -> Set[str]:
+        existing_pngs = get_files_in_dir(directories.output, filetype=".png")
+        existing_pdfs = [png_to_pdf_filename(filename) for filename in existing_pngs]
+
         pdf_filenames_to_scrape = {
-            filename_from_url(f) for f in self.form_urls_to_scrape
+            pdf_filename_from_url(f) for f in self.form_urls_to_scrape
         }
         pdf_filenames_to_download = pdf_filenames_to_scrape.difference(existing_pdfs)
         pdf_urls_to_download = filter_urls_based_on_filenames(
             self.form_urls_to_scrape, pdf_filenames_to_download
         )
         logger.info(
-            f"Found {len(existing_pdfs)} existing PDFs in {directories.output}. Downloading {len(pdf_urls_to_download)} new PDFs."
+            f"Found {len(existing_pdfs)} existing PNGs in {directories.output}. Downloading {len(pdf_urls_to_download)} new PNGs."
         )
         return pdf_urls_to_download
 
-    def _download_new_pdf_forms(self) -> None:
-        pdf_urls_to_download = self._get_pdfs_to_download()
+    def _generate_new_pdf_content(self) -> Iterable:
+        pdf_urls_to_download = self._get_forms_to_download()
         for form_url in pdf_urls_to_download:
-            local_filename = filename_from_url(form_url)
             try:
-                get_chunked_form(form_url, local_filename)
+                content = get_chunked_form_content(form_url)
+                yield content, form_url
             except (ConnectionError, ReadTimeout, ChunkedEncodingError) as e:
                 logger.error(f"{e} for {form_url}")
                 continue
 
-    @staticmethod
-    def _convert_new_pdf_forms_to_png() -> None:
-        pdf_filenames_to_convert = find_pdfs_to_convert()
-        for filename in pdf_filenames_to_convert:
-            pdf_to_png(filename)
-            logger.info(f"Converted {filename} to png.")
+    def _download_png_files(self) -> None:
+        for content, form_url in self._generate_new_pdf_content():
+            filename = filename_from_url(form_url)
+            download_pdf_content_as_png(content, filename)
+            logger.info(f"Downloaded {filename} as png.")
 
-    def _generate_forms_to_scrape(self) -> Iterable:
+    def _generate_forms(self) -> Iterable:
         for form_url in self.form_urls_to_scrape:
             start = time.time()
-            pdf_filename = filename_from_url(form_url)
+            pdf_filename = pdf_filename_from_url(form_url)
             png_filename = pdf_to_png_filename(pdf_filename)
             form = image_to_form(png_filename)
             if form not in self.i140_forms:
@@ -121,7 +122,7 @@ class Scraper:
         new_rows = 0
         eta = list()
 
-        for idx, (form, elapsed_time) in enumerate(self._generate_forms_to_scrape()):
+        for idx, (form, elapsed_time) in enumerate(self._generate_forms()):
             if form:
                 chunk.append(form)
             if len(chunk) % chunk_size == 0 or idx == len(self.form_urls_to_scrape) - 1:
@@ -155,6 +156,5 @@ class Scraper:
         self._populate_i140_forms_from_csv()
         self._populate_form_urls()
         self._populate_form_urls_to_scrape()
-        self._download_new_pdf_forms()
-        self._convert_new_pdf_forms_to_png()
+        self._download_png_files()
         self._write_forms_to_csv(chunk_size=context.chunk_size)

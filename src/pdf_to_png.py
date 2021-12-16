@@ -1,6 +1,6 @@
 import logging
 
-from pdf2image import convert_from_path
+from pdf2image import convert_from_bytes
 from pdf2image.exceptions import PDFPageCountError
 
 from src.config.directories import directories
@@ -8,15 +8,10 @@ from src.config.directories import directories
 logger = logging.getLogger(__name__)
 
 
-def pdf_to_png(local_filename: str) -> None:
+def download_pdf_content_as_png(pdf_bytes: bytes, filename: str) -> None:
     try:
-        convert_from_path(
-            directories.output / local_filename,
-            output_folder="output",
-            fmt="png",
-            output_file=local_filename.split(".pdf")[0],
+        convert_from_bytes(
+            pdf_bytes, output_folder=directories.output, fmt="png", output_file=filename
         )
     except PDFPageCountError as e:
-        logger.error(
-            f"PDFPageCountError: {e} encountered while converting {local_filename}."
-        )
+        logger.error(f"PDFPageCountError: {e} encountered while converting {filename}.")
