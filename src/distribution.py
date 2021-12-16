@@ -1,5 +1,5 @@
 from src.constants import EMAIL_HTML_CONTENT
-from src.constants.service_center_registry import SERVICE_CENTER_REGISTRY
+from src.constants.registry import SERVICE_CENTER_REGISTRY
 from src.context import context
 from src.emailing.emailing import send_email
 

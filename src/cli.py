@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from src.constants.service_center_registry import SERVICE_CENTER_REGISTRY
+from src.constants.registry import SERVICE_CENTER_REGISTRY
 from src.context import context
 from src.distribution import process_distribution
 from src.scraper import Scraper
