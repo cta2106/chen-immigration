@@ -113,7 +113,7 @@ class Scraper:
                 end = time.time()
                 form_dict = form.as_dict() if form else None
                 yield form_dict, end - start
-                logger.debug(f"Added form {form_dict} to forms.")
+                logger.info(f"Added form {form_dict.filename} to forms.")
 
     def _write_forms_to_csv(self, *, chunk_size: int) -> None:
         chunk = list()
@@ -144,7 +144,7 @@ class Scraper:
             directories.data / DATASET, mode="a", header=header, index=False
         )
         logger.info(
-            "Written {existing_rows} out of {form_urls} rows... {percent_complete:.3%} complete.".format(
+            "Written {existing_rows} out of {form_urls} rows to disk... {percent_complete:.3%} complete.".format(
                 existing_rows=existing_rows,
                 form_urls=len(self.form_urls),
                 percent_complete=existing_rows / len(self.form_urls),
