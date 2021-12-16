@@ -133,7 +133,7 @@ class Scraper:
                 remaining_forms = len(self.form_urls) - existing_rows
                 eta.append(datetime.timedelta(seconds=(remaining_forms * elapsed_time)))
 
-                logger.info("Estimated time left: {}".format(np.mean(eta[-5:])))
+                logger.info("Estimated time left: {}".format(np.mean(eta[-100:])))
 
     def _is_empty_csv(self):
         return len(self.form_urls) == len(self.form_urls_to_scrape)
