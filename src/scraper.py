@@ -1,7 +1,10 @@
+import datetime
 import logging
+import time
 from typing import Set, List, Iterable, Optional
 from urllib.parse import urljoin
 
+import numpy as np
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -100,20 +103,23 @@ class Scraper:
 
     def _generate_forms_to_scrape(self) -> Iterable:
         for form_url in self.form_urls_to_scrape:
+            start = time.time()
             pdf_filename = filename_from_url(form_url)
             png_filename = pdf_to_png_filename(pdf_filename)
             form = image_to_form(png_filename)
             if form not in self.i140_forms:
                 self.i140_forms.add(form)
-                yield form.as_dict()
-                logger.info(f"Added form {form.as_dict()} to forms.")
+                end = time.time()
+                yield form.as_dict(), end - start
+                logger.debug(f"Added form {form.as_dict()} to forms.")
 
     def _write_forms_to_csv(self, *, chunk_size: int) -> None:
         chunk = list()
         existing_rows = len(self.form_urls) - len(self.form_urls_to_scrape)
         new_rows = 0
+        eta = list()
 
-        for idx, form in enumerate(self._generate_forms_to_scrape()):
+        for idx, (form, elapsed_time) in enumerate(self._generate_forms_to_scrape()):
             chunk.append(form)
             if len(chunk) % chunk_size == 0 or idx == len(self.form_urls_to_scrape) - 1:
                 existing_rows += chunk_size
@@ -121,6 +127,10 @@ class Scraper:
 
                 self._write_chunk(chunk, existing_rows)
                 chunk = list()
+                remaining_forms = len(self.form_urls) - existing_rows
+                eta.append(datetime.timedelta(seconds=(remaining_forms * elapsed_time)))
+
+                logger.info("Estimated time left: {}".format(np.mean(eta[-5:])))
 
     def _is_empty_csv(self):
         return len(self.form_urls) == len(self.form_urls_to_scrape)
@@ -144,4 +154,4 @@ class Scraper:
         self._populate_form_urls_to_scrape()
         self._download_new_pdf_forms()
         self._convert_new_pdf_forms_to_png()
-        self._write_forms_to_csv(chunk_size=1)
+        self._write_forms_to_csv(chunk_size=5)
