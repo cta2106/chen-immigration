@@ -4,8 +4,8 @@ This code scrapes data from the I-140 approvals section of the [Chen Immigration
 
 ### Analysis Steps:
 
-1. Download PDF files from the Chen Immigration website
-2. Generate PNG images necessary for parsing by [pytesseract](https://pypi.org/project/pytesseract/)
+1. Get PDF stream from the Chen Immigration website
+2. Transform PDF stream into PNG and download images necessary for parsing by [pytesseract](https://pypi.org/project/pytesseract/)
 3. Parse images using [pytesseract](https://pypi.org/project/pytesseract/) and generate `I140Form` objects
 4. Generate dataset based on `I140Form` features such as `notice date`, `receipt date`, `priority date`, and `NIW flag` indicating whether a form is for an NIW application
 5. Generate yearly wait time distribution and plot for 2017+
