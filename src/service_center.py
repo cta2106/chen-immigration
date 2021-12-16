@@ -119,8 +119,8 @@ class ServiceCenter:
         last6 = today - pd.DateOffset(months=6)
         self._df_preprocessed["notice_date"] = self._df_preprocessed[
             "notice_date"
-        ].apply(
-            lambda x: x.replace(tzinfo=None)
+        ].dt.tz_localize(
+            None
         )  # get rid of timezone info
         df_6M = self._df_preprocessed.query(
             "(@today >= notice_date >= @last6)"
