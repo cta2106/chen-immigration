@@ -52,7 +52,7 @@ class Scraper:
         )
         self.form_urls = form_urls
 
-    def _populate_form_urls_to_scrape(self) -> Set[str]:
+    def _populate_form_urls_to_scrape(self) -> None:
         filenames_from_csv = {
             png_to_pdf_filename(form.filename) for form in self.i140_forms
         }
@@ -104,7 +104,7 @@ class Scraper:
             png_filename = pdf_to_png_filename(pdf_filename)
             form = image_to_form(png_filename)
             if form not in self.i140_forms:
-                self.i140_forms.append(form)
+                self.i140_forms.add(form)
                 yield form.as_dict()
                 logger.info(f"Added form {form.as_dict()} to forms.")
 

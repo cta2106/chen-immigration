@@ -24,3 +24,6 @@ class I140Form:
             if isinstance(self.service_center, ServiceCenterEnum)
             else None,
         }
+
+    def __hash__(self):
+        return hash(self.filename)
