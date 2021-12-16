@@ -27,3 +27,6 @@ class I140Form:
 
     def __hash__(self):
         return hash(self.filename)
+
+    def __repr__(self):
+        return self.filename
