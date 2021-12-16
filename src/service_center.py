@@ -1,9 +1,11 @@
 import logging
-import pandas as pd
-import plotly.express as px
 from datetime import datetime
 from enum import Enum, auto
+
+import pandas as pd
+import plotly.express as px
 from scipy.stats import stats
+
 from src.config.directories import directories
 from src.constants import DATASET, HTML_FILENAME, PNG_FILENAME, APPLICATION_DATE
 

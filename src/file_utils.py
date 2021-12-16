@@ -1,10 +1,12 @@
 import logging
-import requests
 from os import listdir
 from os.path import isfile
 from pathlib import Path
-from src.config.directories import directories
 from typing import Set, List
+
+import requests
+
+from src.config.directories import directories
 
 logger = logging.getLogger(__name__)
 
