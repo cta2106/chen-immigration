@@ -1,12 +1,10 @@
 import logging
-from typing import List, Optional
-
 import pandas as pd
-
 from src.config.directories import directories
 from src.constants import DATASET
 from src.form import I140Form
 from src.service_center import ServiceCenterEnum
+from typing import List, Optional
 
 logger = logging.getLogger(__name__)
 

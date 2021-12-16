@@ -1,13 +1,9 @@
 import datetime
 import logging
-from typing import Set, List, Iterable, Optional
-from urllib.parse import urljoin
-
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from requests.exceptions import ReadTimeout, ConnectionError, ChunkedEncodingError
-
 from src.config.directories import directories
 from src.constants import DATASET, URL_2019, URL_2020, URL_2021, URL_PRE_2019
 from src.dataset_utils import read_i140_forms_from_csv
@@ -23,6 +19,8 @@ from src.file_utils import (
 from src.form import I140Form
 from src.image_to_form import image_to_form
 from src.pdf_to_png import pdf_to_png
+from typing import Set, List, Iterable, Optional
+from urllib.parse import urljoin
 
 logger = logging.getLogger(__name__)
 

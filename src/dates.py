@@ -1,9 +1,8 @@
 import datetime
 import logging
-from typing import Tuple, Union
-
 from dateparser.search import search_dates
 from dateparser_data.settings import default_parsers
+from typing import Tuple, Union
 
 parsers = [parser for parser in default_parsers if parser != "relative-time"]
 
