@@ -110,8 +110,9 @@ class Scraper:
             if form not in self.i140_forms:
                 self.i140_forms.add(form)
                 end = time.time()
-                yield form.as_dict(), end - start
-                logger.debug(f"Added form {form.as_dict()} to forms.")
+                form_dict = form.as_dict() if form else None
+                yield form_dict, end - start
+                logger.debug(f"Added form {form_dict} to forms.")
 
     def _write_forms_to_csv(self, *, chunk_size: int) -> None:
         chunk = list()
@@ -120,7 +121,8 @@ class Scraper:
         eta = list()
 
         for idx, (form, elapsed_time) in enumerate(self._generate_forms_to_scrape()):
-            chunk.append(form)
+            if form:
+                chunk.append(form)
             if len(chunk) % chunk_size == 0 or idx == len(self.form_urls_to_scrape) - 1:
                 existing_rows += chunk_size
                 new_rows += chunk_size
