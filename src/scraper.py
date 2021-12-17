@@ -139,16 +139,16 @@ class Scraper:
     def _is_empty_csv(self):
         return len(self.form_urls) == len(self.form_urls_to_scrape)
 
-    def _write_chunk(self, chunk: List[Optional[I140Form]], existing_rows: int) -> None:
-        header = True if existing_rows == len(chunk) else False
+    def _write_chunk(self, chunk: List[Optional[I140Form]], num_existing_rows: int) -> None:
+        header = True if num_existing_rows == len(chunk) else False
         pd.DataFrame(chunk).to_csv(
             directories.data / DATASET, mode="a", header=header, index=False
         )
         logger.info(
-            "Written {existing_rows} out of {form_urls} rows to disk... {percent_complete:.3%} complete.".format(
-                existing_rows=existing_rows,
+            "Written {num_existing_rows} out of {form_urls} rows to disk... {percent_complete:.3%} complete.".format(
+                num_existing_rows=num_existing_rows,
                 form_urls=len(self.form_urls),
-                percent_complete=existing_rows / len(self.form_urls),
+                percent_complete=num_existing_rows / len(self.form_urls),
             )
         )
 
