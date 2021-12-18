@@ -145,7 +145,7 @@ class Scraper:
             directories.data / DATASET, mode="a", header=header, index=False
         )
         logger.info(
-            "Written {num_existing_rows} out of {form_urls} rows to disk... {percent_complete:.3%} complete.".format(
+            "Wrote {num_existing_rows} out of {form_urls} rows to disk... {percent_complete:.3%} complete.".format(
                 num_existing_rows=num_existing_rows,
                 form_urls=len(self.form_urls),
                 percent_complete=num_existing_rows / len(self.form_urls),
