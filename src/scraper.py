@@ -120,7 +120,7 @@ class Scraper:
         chunk = list()
         existing_rows = len(self.form_urls) - len(self.form_urls_to_scrape)
         new_rows = 0
-        eta = list()
+        average_speed = list()
 
         for idx, (form, elapsed_time) in enumerate(self._generate_forms()):
             if form:
@@ -132,14 +132,22 @@ class Scraper:
                 self._write_chunk(chunk, existing_rows)
                 chunk = list()
                 remaining_forms = len(self.form_urls) - existing_rows
-                eta.append(datetime.timedelta(seconds=(remaining_forms * elapsed_time)))
+                average_speed.append(elapsed_time)
 
-                logger.info("Estimated time left: {}".format(np.mean(eta[-100:])))
+                logger.info(
+                    "Estimated time left: {}".format(
+                        datetime.timedelta(
+                            seconds=(remaining_forms * np.mean(average_speed[-100:]))
+                        )
+                    )
+                )
 
     def _is_empty_csv(self):
         return len(self.form_urls) == len(self.form_urls_to_scrape)
 
-    def _write_chunk(self, chunk: List[Optional[I140Form]], num_existing_rows: int) -> None:
+    def _write_chunk(
+        self, chunk: List[Optional[I140Form]], num_existing_rows: int
+    ) -> None:
         header = True if num_existing_rows == len(chunk) else False
         pd.DataFrame(chunk).to_csv(
             directories.data / DATASET, mode="a", header=header, index=False
