@@ -76,11 +76,11 @@ class Scraper:
         existing_pdfs = [png_to_pdf_filename(filename) for filename in existing_pngs]
 
         pdf_filenames_to_scrape = {
-            pdf_filename_from_url(f) for f in self.form_urls_to_scrape
+            pdf_filename_from_url(f) for f in self.form_urls
         }
         pdf_filenames_to_download = pdf_filenames_to_scrape.difference(existing_pdfs)
         pdf_urls_to_download = filter_urls_based_on_filenames(
-            self.form_urls_to_scrape, pdf_filenames_to_download
+            self.form_urls, pdf_filenames_to_download
         )
         logger.info(
             f"Found {len(existing_pdfs)} existing PNGs in {directories.output}. Downloading {len(pdf_urls_to_download)} new PNGs."
@@ -163,6 +163,6 @@ class Scraper:
     def run(self):
         self._populate_i140_forms_from_csv()
         self._populate_form_urls()
-        self._populate_form_urls_to_scrape()
         self._download_png_files()
+        self._populate_form_urls_to_scrape()
         self._write_forms_to_csv(chunk_size=context.chunk_size)
