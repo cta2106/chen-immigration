@@ -3,7 +3,7 @@
 This code scrapes data from the I-140 approvals section of the [Chen Immigration website](https://www.wegreened.com/eb1_niw_approvals) and processes it to determine current wait times by service center.
 
 #### Note:
-This codebase will download ~20K PNG files onto your disk, please ensure that you have enough space to avoid runtime issues.  
+This codebase will download ~20K PNG files onto your disk, please ensure that you have enough space to avoid runtime issues.
 
 ### Analysis Steps:
 
