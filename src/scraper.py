@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 from requests.exceptions import ReadTimeout, ConnectionError, ChunkedEncodingError
 
 from src.config.directories import directories
-from src.constants import DATASET, URL_2019, URL_2020, URL_2021, URL_PRE_2019
+from src.constants import DATASET, URL_2019, URL_2020, URL_2021, URL_2022, URL_PRE_2019
 from src.context import context
 from src.dataset_utils import read_i140_forms_from_csv
 from src.file_utils import (
@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 
 class Scraper:
     def __init__(self):
-        self.page_urls = [URL_PRE_2019, URL_2019, URL_2020, URL_2021]
+        self.page_urls = [URL_PRE_2019, URL_2019, URL_2020, URL_2021, URL_2022]
         self.i140_forms = set()
         self.form_urls = set()
         self.form_urls_to_scrape = set()
