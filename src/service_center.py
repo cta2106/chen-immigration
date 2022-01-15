@@ -11,6 +11,9 @@ from src.constants import DATASET, HTML_FILENAME, PNG_FILENAME, APPLICATION_DATE
 
 logger = logging.getLogger(__name__)
 
+PERCENTILES = [0.05, 0.25, 0.5, 0.75, 0.93, 0.99]
+DISTRIBUTION_COLUMNS = [f"{percentile * 100:.0f}%" for percentile in PERCENTILES]
+
 
 class ServiceCenterEnum(Enum):
     LIN = auto()
@@ -19,10 +22,10 @@ class ServiceCenterEnum(Enum):
 
 class ServiceCenter:
     def __init__(
-        self,
-        service_center: ServiceCenterEnum = None,
-        df_preprocessed: pd.DataFrame = None,
-        df_processing_times_distribution: pd.DataFrame = None,
+            self,
+            service_center: ServiceCenterEnum = None,
+            df_preprocessed: pd.DataFrame = None,
+            df_processing_times_distribution: pd.DataFrame = None,
     ):
         self._service_center = service_center
         self._df_preprocessed = df_preprocessed
@@ -53,20 +56,14 @@ class ServiceCenter:
         # Filter out observations where notice date <= received date
         df_preprocessed = df_preprocessed.loc[
             df_preprocessed["notice_date"] > df_preprocessed["received_date"]
-        ]
+            ]
 
         # Add interesting features
         df_preprocessed["processing_time"] = (
-            df_preprocessed["notice_date"] - df_preprocessed["received_date"]
+                df_preprocessed["notice_date"] - df_preprocessed["received_date"]
         ).dt.days
         df_preprocessed["received_year"] = df_preprocessed["received_date"].dt.year
         df_preprocessed["notice_year"] = df_preprocessed["notice_date"].dt.year
-
-        # Clip outliers based on processing time
-        df_preprocessed = df_preprocessed.loc[
-            df_preprocessed["processing_time"]
-            <= df_preprocessed["processing_time"].quantile(0.99)
-        ]
 
         self._df_preprocessed = df_preprocessed.reset_index(drop=True)
 
@@ -74,14 +71,14 @@ class ServiceCenter:
         self._generate_preprocessed_forms_dataset()
         df_processing_times_distribution = self._df_preprocessed.groupby(
             ["notice_year"]
-        )["processing_time"].describe()
+        )["processing_time"].describe(percentiles=PERCENTILES)
         df_processing_times_distribution = df_processing_times_distribution.loc[
             df_processing_times_distribution.index <= 2021
-        ]
+            ]
         df_processing_times_distribution = df_processing_times_distribution.loc[2017:][
-            ["min", "25%", "50%", "75%", "max"]
+            DISTRIBUTION_COLUMNS
         ]
-        self._df_processing_times_distribution = df_processing_times_distribution
+        self._df_processing_times_distribution = df_processing_times_distribution.apply(lambda x: round(x))
 
     @staticmethod
     def _get_days_since_application(application_date: str) -> int:
@@ -95,7 +92,7 @@ class ServiceCenter:
         fig = px.bar(
             self._df_processing_times_distribution.reset_index(),
             x="notice_year",
-            y=["min", "25%", "50%", "75%", "max"],
+            y=DISTRIBUTION_COLUMNS,
             labels={"notice_year": "Year Approved", "value": "Days Elapsed"},
             title=f"{self._service_center.name} Processing Time - NIW w/ Chen Immigration",
             text="value",
@@ -110,6 +107,7 @@ class ServiceCenter:
             directories.images
             / PNG_FILENAME.format(service_center_name=self._service_center.name)
         )
+        fig.show()
 
     def get_percentile_of_days_elapsed(self) -> float:
         if self._df_preprocessed is None:
