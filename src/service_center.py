@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 PERCENTILES = [0.05, 0.25, 0.5, 0.75, 0.93, 0.99]
 DISTRIBUTION_COLUMNS = [f"{percentile * 100:.0f}%" for percentile in PERCENTILES]
+CURRENT_YEAR = datetime.now().year
 
 
 class ServiceCenterEnum(Enum):
@@ -73,7 +74,7 @@ class ServiceCenter:
             ["notice_year"]
         )["processing_time"].describe(percentiles=PERCENTILES)
         df_processing_times_distribution = df_processing_times_distribution.loc[
-            df_processing_times_distribution.index <= 2021
+            df_processing_times_distribution.index <= CURRENT_YEAR
             ]
         df_processing_times_distribution = df_processing_times_distribution.loc[2017:][
             DISTRIBUTION_COLUMNS
